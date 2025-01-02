@@ -77,7 +77,7 @@ const Stats = () => {
       return 'X/13';
     });
 
-    const shareText = `Türkçe Octordle #${dayNumber}\n\n${boardResults.join('\n')}\n\nPuan: ${score}/132\n\nhttps://turkce-octordle.com`;
+    const shareText = `Türkçe Octordle #${dayNumber}\n\n${boardResults.join('\n')}\n\nPuan: ${score}/132\n\nhttps://stalwart-babka-3f72e9.netlify.app/`;
     return shareText;
   };
 
