@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGame } from '../../context/GameContext';
+import useKeyboard from '../../hooks/useKeyboard';
 
 const Keyboard = () => {
-  const { usedLetters, makeGuess, currentGuess, setCurrentGuess, gameStatus } = useGame();
+  const { usedLetters, gameStatus } = useGame();
+  const { handleKeyPress } = useKeyboard();
 
   const keyboardLayout = [
     ['E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Ğ', 'Ü'],
@@ -10,19 +12,15 @@ const Keyboard = () => {
     ['ENTER', 'Z', 'C', 'V', 'B', 'N', 'M', 'Ö', 'Ç', '⌫']
   ];
 
-  const handleKeyClick = (key) => {
-    if (gameStatus !== 'playing') return;
+  // Klavye olaylarını dinle
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      handleKeyPress(event.key);
+    };
 
-    if (key === 'ENTER') {
-      if (currentGuess.length === 5) {
-        makeGuess(currentGuess);
-      }
-    } else if (key === '⌫') {
-      setCurrentGuess(prev => prev.slice(0, -1));
-    } else if (currentGuess.length < 5) {
-      setCurrentGuess(prev => prev + key.toLowerCase());
-    }
-  };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyPress]);
 
   const getKeyStyle = (key) => {
     if (key === 'ENTER' || key === '⌫') {
@@ -52,7 +50,13 @@ const Keyboard = () => {
             {row.map((key) => (
               <button
                 key={key}
-                onClick={() => handleKeyClick(key)}
+                onClick={() => {
+                  if (key === '⌫') {
+                    handleKeyPress('Backspace');
+                  } else {
+                    handleKeyPress(key);
+                  }
+                }}
                 className={`
                   ${getKeyStyle(key)}
                   ${key === 'ENTER' ? 'w-20' : key === '⌫' ? 'w-16' : 'w-12'}
