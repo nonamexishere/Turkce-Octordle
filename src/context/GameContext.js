@@ -145,7 +145,10 @@ export const GameProvider = ({ children }) => {
 
   const normalizeWord = (word) => {
     const charMap = {
-      'İ': 'İ', 'I': 'I', 'i': 'İ', 'ı': 'I',
+      'i': 'İ',
+      'I': 'I',
+      'İ': 'İ',
+      'ı': 'I',
       'Ğ': 'Ğ', 'ğ': 'Ğ',
       'Ü': 'Ü', 'ü': 'Ü',
       'Ş': 'Ş', 'ş': 'Ş',
@@ -161,52 +164,20 @@ export const GameProvider = ({ children }) => {
       return true;
     }
     
-    // Türkçe karakterleri normalize et
-    const normalizeForComparison = (word) => {
-      return word.split('').map(char => {
-        switch(char.toLowerCase()) {
-          case 'i': case 'İ': return 'I';
-          case 'ı': case 'I': return 'I';
-          case 'ğ': case 'Ğ': return 'G';
-          case 'ü': case 'Ü': return 'U';
-          case 'ş': case 'Ş': return 'S';
-          case 'ö': case 'Ö': return 'O';
-          case 'ç': case 'Ç': return 'C';
-          default: return char.toUpperCase();
-        }
-      }).join('');
-    };
-    
-    const normalizedGuess = normalizeForComparison(guess);
-    return wordList.some(w => normalizeForComparison(w.word) === normalizedGuess);
+    const normalizedGuess = normalizeWord(guess);
+    return wordList.some(w => normalizeWord(w.word) === normalizedGuess);
   };
 
   const checkGuess = async (guess, targetWord) => {
     try {
-      // Türkçe karakterleri normalize et
-      const normalizeForCheck = (word) => {
-        return word.split('').map(char => {
-          switch(char.toLowerCase()) {
-            case 'i': case 'İ': return 'I';
-            case 'ı': case 'I': return 'I';
-            case 'ğ': case 'Ğ': return 'G';
-            case 'ü': case 'Ü': return 'U';
-            case 'ş': case 'Ş': return 'S';
-            case 'ö': case 'Ö': return 'O';
-            case 'ç': case 'Ç': return 'C';
-            default: return char.toUpperCase();
-          }
-        }).join('');
-      };
-
       const response = await fetch('/.netlify/functions/check-word', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          guess: normalizeForCheck(guess), 
-          target: normalizeForCheck(targetWord)
+          guess: normalizeWord(guess), 
+          target: normalizeWord(targetWord)
         }),
       });
 
