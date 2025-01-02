@@ -145,12 +145,12 @@ export const GameProvider = ({ children }) => {
 
   const normalizeWord = (word) => {
     const charMap = {
-      'İ': 'i', 'I': 'ı',
-      'Ğ': 'ğ', 'Ü': 'ü',
-      'Ş': 'ş', 'Ö': 'ö',
-      'Ç': 'ç'
+      'İ': 'I', 'I': 'I',
+      'Ğ': 'Ğ', 'Ü': 'Ü',
+      'Ş': 'Ş', 'Ö': 'Ö',
+      'Ç': 'Ç'
     };
-    return word.split('').map(char => charMap[char] || char.toLowerCase()).join('');
+    return word.split('').map(char => charMap[char] || char.toUpperCase()).join('');
   };
 
   const isValidWord = (guess) => {

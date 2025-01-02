@@ -3,7 +3,7 @@ const words = require('../game_words.json');
 exports.handler = async function(event, context) {
   try {
     // Günün kelimelerini seç
-    const startDate = new Date('2024-03-20').getTime();
+    const startDate = new Date('2024-01-02').getTime();
     const today = new Date().getTime();
     const dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
     
