@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/turkce-octordle/static/css/main.1a8715e1.css",
+    "main.js": "/turkce-octordle/static/js/main.c3347ceb.js",
+    "index.html": "/turkce-octordle/index.html",
+    "main.1a8715e1.css.map": "/turkce-octordle/static/css/main.1a8715e1.css.map",
+    "main.c3347ceb.js.map": "/turkce-octordle/static/js/main.c3347ceb.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1a8715e1.css",
+    "static/js/main.c3347ceb.js"
+  ]
+}
