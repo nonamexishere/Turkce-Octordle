@@ -3,7 +3,7 @@ const path = require('path');
 
 exports.handler = async function(event, context) {
   try {
-    const dataPath = path.join(__dirname, '../../public/data/game_words.json');
+    const dataPath = path.join(__dirname, '../game_words.json');
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
     
     return {
@@ -17,6 +17,7 @@ exports.handler = async function(event, context) {
       })
     };
   } catch (error) {
+    console.error('Error:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Kelime listesi yüklenirken hata oluştu' })
