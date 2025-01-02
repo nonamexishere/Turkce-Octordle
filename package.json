@@ -2,7 +2,7 @@
   "name": "turkce-octordle",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://nonamexishere.github.io/turkce-octordle",
+  "homepage": ".",
   "dependencies": {
     "autoprefixer": "^10.4.20",
     "cors": "^2.8.5",
