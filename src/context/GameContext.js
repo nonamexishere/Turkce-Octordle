@@ -163,15 +163,18 @@ export const GameProvider = ({ children }) => {
     
     // Türkçe karakterleri normalize et
     const normalizeForComparison = (word) => {
-      const charMap = {
-        'İ': 'I', 'I': 'I', 'i': 'I', 'ı': 'I',
-        'Ğ': 'G', 'ğ': 'G',
-        'Ü': 'U', 'ü': 'U',
-        'Ş': 'S', 'ş': 'S',
-        'Ö': 'O', 'ö': 'O',
-        'Ç': 'C', 'ç': 'C'
-      };
-      return word.split('').map(char => charMap[char] || char.toUpperCase()).join('');
+      return word.split('').map(char => {
+        switch(char.toLowerCase()) {
+          case 'i': case 'İ': return 'I';
+          case 'ı': case 'I': return 'I';
+          case 'ğ': case 'Ğ': return 'G';
+          case 'ü': case 'Ü': return 'U';
+          case 'ş': case 'Ş': return 'S';
+          case 'ö': case 'Ö': return 'O';
+          case 'ç': case 'Ç': return 'C';
+          default: return char.toUpperCase();
+        }
+      }).join('');
     };
     
     const normalizedGuess = normalizeForComparison(guess);
@@ -180,14 +183,30 @@ export const GameProvider = ({ children }) => {
 
   const checkGuess = async (guess, targetWord) => {
     try {
+      // Türkçe karakterleri normalize et
+      const normalizeForCheck = (word) => {
+        return word.split('').map(char => {
+          switch(char.toLowerCase()) {
+            case 'i': case 'İ': return 'I';
+            case 'ı': case 'I': return 'I';
+            case 'ğ': case 'Ğ': return 'G';
+            case 'ü': case 'Ü': return 'U';
+            case 'ş': case 'Ş': return 'S';
+            case 'ö': case 'Ö': return 'O';
+            case 'ç': case 'Ç': return 'C';
+            default: return char.toUpperCase();
+          }
+        }).join('');
+      };
+
       const response = await fetch('/.netlify/functions/check-word', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          guess: guess.toLowerCase(), 
-          target: targetWord.toLowerCase() 
+          guess: normalizeForCheck(guess), 
+          target: normalizeForCheck(targetWord)
         }),
       });
 

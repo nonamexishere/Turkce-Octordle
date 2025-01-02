@@ -33,7 +33,7 @@ exports.handler = async function(event, context) {
     for (let i = 0; i < 5; i++) {
       if (guessChars[i] === null) continue;
       
-      const targetIndex = targetChars.indexOf(guessChars[i]);
+      const targetIndex = targetChars.findIndex(char => char === guessChars[i]);
       if (targetIndex !== -1) {
         result[i] = 'present';
         targetChars[targetIndex] = null;
@@ -49,6 +49,7 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ result })
     };
   } catch (error) {
+    console.error('Error:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Kelime kontrolünde hata oluştu' })
