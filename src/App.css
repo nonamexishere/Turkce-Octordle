@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .keyboard-key {
+    @apply px-3 py-4 rounded text-base font-semibold transition-all
+           hover:brightness-90 active:scale-95 select-none;
+  }
+
+  .game-square {
+    @apply w-8 h-8 flex items-center justify-center text-base font-bold
+           border-2 rounded transition-all duration-300;
+  }
+
+  .game-board {
+    @apply p-3 bg-white rounded-lg shadow-sm transition-all duration-300;
+  }
+}
+
+/* Responsive tasarım */
+@media (min-width: 1024px) {
+  .game-square {
+    @apply w-10 h-10 text-lg;
+  }
+
+  .keyboard-key {
+    @apply px-4 py-5 text-lg;
+  }
+}
+
+@media (max-width: 640px) {
+  .game-square {
+    @apply w-7 h-7 text-sm;
+  }
+
+  .keyboard-key {
+    @apply px-2 py-3 text-sm;
+  }
+} 
