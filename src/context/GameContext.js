@@ -123,7 +123,7 @@ export const GameProvider = ({ children }) => {
 
   const fetchGameWords = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/game/words');
+      const response = await fetch('/.netlify/functions/words');
       const data = await response.json();
       setGameWords(data.words);
       setDayNumber(data.dayNumber);
@@ -134,7 +134,7 @@ export const GameProvider = ({ children }) => {
 
   const fetchWordList = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/words');
+      const response = await fetch('/.netlify/functions/words-list');
       const data = await response.json();
       console.log('Loaded word list:', data);
       setWordList(data.words.map(w => w.word.toLowerCase()));
@@ -166,7 +166,7 @@ export const GameProvider = ({ children }) => {
 
   const checkGuess = async (guess, targetWord) => {
     try {
-      const response = await fetch('http://localhost:3001/api/check-word', {
+      const response = await fetch('/.netlify/functions/check-word', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
