@@ -23,7 +23,7 @@ const shuffleWords = (wordList, seed) => {
 exports.handler = async function(event, context) {
   try {
     // Günün kelimelerini seç
-    const startDate = new Date('2025-01-03').getTime();
+    const startDate = new Date('2025-01-02').getTime();
     const today = new Date().getTime();
     let dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
     

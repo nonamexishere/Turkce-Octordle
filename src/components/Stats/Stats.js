@@ -6,7 +6,7 @@ const WordMeaningModal = ({ word, onClose }) => {
   const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
-    fetch(`https://sozluk.gov.tr/gts?ara=${word}`)
+    fetch(`/.netlify/functions/tdk-proxy?word=${encodeURIComponent(word)}`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
