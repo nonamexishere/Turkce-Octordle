@@ -156,10 +156,22 @@ export const GameProvider = ({ children }) => {
   const isValidWord = (guess) => {
     if (isLoading || !wordList.length) {
       console.log('Word list is still loading...');
-      return true; // Yükleme sırasında tüm kelimelere izin ver
+      return true;
     }
-    const normalizedGuess = guess.toUpperCase();
-    return wordList.some(w => w.word.toUpperCase() === normalizedGuess);
+    
+    // Türkçe karakterleri normalize et
+    const normalizeForComparison = (word) => {
+      return word.replace(/İ/g, 'I')
+                .replace(/Ğ/g, 'G')
+                .replace(/Ü/g, 'U')
+                .replace(/Ş/g, 'S')
+                .replace(/Ö/g, 'O')
+                .replace(/Ç/g, 'C')
+                .toUpperCase();
+    };
+    
+    const normalizedGuess = normalizeForComparison(guess);
+    return wordList.some(w => normalizeForComparison(w.word) === normalizedGuess);
   };
 
   const checkGuess = async (guess, targetWord) => {

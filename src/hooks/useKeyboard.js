@@ -22,28 +22,31 @@ const useKeyboard = () => {
     'ç': 'Ç'
   };
 
-  const handleKeyPress = useCallback((event) => {
+  const handleKeyInput = useCallback((key) => {
     if (gameStatus !== 'playing') return;
 
-    const key = event.key.toLowerCase();
-    const turkishKey = turkishKeyMap[key] || key;
-
-    if (key === 'enter') {
+    const lowerKey = key.toLowerCase();
+    
+    if (lowerKey === 'enter') {
       makeGuess(currentGuess);
-    } else if (key === 'backspace') {
+    } else if (lowerKey === 'backspace' || lowerKey === '←') {
       setCurrentGuess(prev => prev.slice(0, -1));
-    } else if (/^[a-zçğıiöşü]$/.test(key) && currentGuess.length < 5) {
-      const mappedKey = turkishKeyMap[key] || key.toUpperCase();
+    } else if (/^[a-zçğıiöşü]$/.test(lowerKey) && currentGuess.length < 5) {
+      const mappedKey = turkishKeyMap[lowerKey] || lowerKey.toUpperCase();
       setCurrentGuess(prev => prev + mappedKey);
     }
   }, [currentGuess, makeGuess, gameStatus]);
+
+  const handleKeyPress = useCallback((event) => {
+    handleKeyInput(event.key);
+  }, [handleKeyInput]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
-  return { handleKeyPress };
+  return { handleKeyPress: handleKeyInput };
 };
 
 export default useKeyboard; 
