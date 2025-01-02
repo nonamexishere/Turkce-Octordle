@@ -57,6 +57,7 @@ export const GameProvider = ({ children }) => {
   const [score, setScore] = useState(0);
   const [dayNumber, setDayNumber] = useState(1);
   const [stats, setStats] = useState(loadStats);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'error' });
 
   // Oyun durumunu kaydet
   const saveGameState = () => {
@@ -242,12 +243,20 @@ export const GameProvider = ({ children }) => {
     return totalScore;
   };
 
+  const showToast = (message, type = 'error') => {
+    setToast({ show: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast({ show: false, message: '', type: 'error' });
+  };
+
   const makeGuess = async (guess) => {
     if (gameStatus !== 'playing' || guess.length !== 5) return;
 
     try {
       if (!isValidWord(guess)) {
-        alert('Bu kelime listede yok!');
+        showToast('Bu kelime listede yok!');
         return;
       }
 
@@ -279,7 +288,7 @@ export const GameProvider = ({ children }) => {
       setCurrentGuess('');
     } catch (error) {
       console.error('Tahmin yapılırken hata oluştu:', error);
-      alert('Bir hata oluştu, lütfen tekrar deneyin.');
+      showToast('Bir hata oluştu, lütfen tekrar deneyin.');
     }
   };
 
@@ -305,7 +314,9 @@ export const GameProvider = ({ children }) => {
     solvedBoards,
     score,
     dayNumber,
-    stats
+    stats,
+    toast,
+    hideToast
   };
 
   return (
