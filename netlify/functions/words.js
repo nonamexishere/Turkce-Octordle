@@ -5,7 +5,11 @@ exports.handler = async function(event, context) {
     // Günün kelimelerini seç
     const startDate = new Date('2024-01-02').getTime();
     const today = new Date().getTime();
-    const dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    let dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    
+    // Mevcut kelime sayısına göre gün sayısını sınırla
+    const maxDays = Math.floor(words.words.length / 8);
+    dayNumber = ((dayNumber - 1) % maxDays) + 1;
     
     return {
       statusCode: 200,

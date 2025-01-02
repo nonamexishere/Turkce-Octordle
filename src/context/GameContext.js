@@ -137,7 +137,7 @@ export const GameProvider = ({ children }) => {
       const response = await fetch('/.netlify/functions/words-list');
       const data = await response.json();
       console.log('Loaded word list:', data);
-      setWordList(data.words.map(w => w.word.toLowerCase()));
+      setWordList(data.words);
     } catch (error) {
       console.error('Kelime listesi yüklenirken hata:', error);
     }
@@ -145,7 +145,7 @@ export const GameProvider = ({ children }) => {
 
   const normalizeWord = (word) => {
     const charMap = {
-      'İ': 'I', 'I': 'I',
+      'İ': 'İ', 'I': 'I',
       'Ğ': 'Ğ', 'Ü': 'Ü',
       'Ş': 'Ş', 'Ö': 'Ö',
       'Ç': 'Ç'
@@ -158,10 +158,8 @@ export const GameProvider = ({ children }) => {
       console.log('Word list is still loading...');
       return true; // Yükleme sırasında tüm kelimelere izin ver
     }
-    const normalizedGuess = normalizeWord(guess.toLowerCase());
-    console.log('Checking word:', normalizedGuess);
-    console.log('Word list length:', wordList.length);
-    return wordList.includes(normalizedGuess);
+    const normalizedGuess = guess.toUpperCase();
+    return wordList.some(w => w.word.toUpperCase() === normalizedGuess);
   };
 
   const checkGuess = async (guess, targetWord) => {

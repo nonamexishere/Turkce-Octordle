@@ -2,37 +2,25 @@ import { useEffect, useCallback } from 'react';
 import { useGame } from '../context/GameContext';
 
 const useKeyboard = () => {
-  const { currentGuess, setCurrentGuess, makeGuess, gameWords, gameStatus } = useGame();
+  const { currentGuess, setCurrentGuess, makeGuess, gameStatus } = useGame();
 
   // Türkçe karakter eşleştirmeleri
   const turkishKeyMap = {
-    'i': 'i',
-    'I': 'ı',
-    'İ': 'i',
-    'ı': 'ı',
-    'Ğ': 'ğ',
-    'ğ': 'ğ',
-    'Ü': 'ü',
-    'ü': 'ü',
-    'Ş': 'ş',
-    'ş': 'ş',
-    'Ö': 'ö',
-    'ö': 'ö',
-    'Ç': 'ç',
-    'ç': 'ç'
+    'i': 'İ',
+    'I': 'I',
+    'İ': 'İ',
+    'ı': 'I',
+    'Ğ': 'Ğ',
+    'ğ': 'Ğ',
+    'Ü': 'Ü',
+    'ü': 'Ü',
+    'Ş': 'Ş',
+    'ş': 'Ş',
+    'Ö': 'Ö',
+    'ö': 'Ö',
+    'Ç': 'Ç',
+    'ç': 'Ç'
   };
-
-  // Kelime listesinde var mı kontrol et
-  const isValidWord = useCallback(async (word) => {
-    try {
-      const response = await fetch('http://localhost:3001/api/words');
-      const data = await response.json();
-      return data.words.some(w => w.word.toLowerCase() === word.toLowerCase());
-    } catch (error) {
-      console.error('Kelime kontrolünde hata:', error);
-      return false;
-    }
-  }, []);
 
   const handleKeyPress = useCallback((event) => {
     if (gameStatus !== 'playing') return;
@@ -44,18 +32,15 @@ const useKeyboard = () => {
       makeGuess(currentGuess);
     } else if (key === 'backspace') {
       setCurrentGuess(prev => prev.slice(0, -1));
-    } else if (/^[a-zçğıöşü]$/.test(turkishKey) && currentGuess.length < 5) {
-      setCurrentGuess(prev => prev + turkishKey.toUpperCase());
+    } else if (/^[a-zçğıiöşü]$/.test(key) && currentGuess.length < 5) {
+      const mappedKey = turkishKeyMap[key] || key.toUpperCase();
+      setCurrentGuess(prev => prev + mappedKey);
     }
-  }, [currentGuess, makeGuess, gameStatus, turkishKeyMap]);
+  }, [currentGuess, makeGuess, gameStatus]);
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      handleKeyPress(event);
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
   return { handleKeyPress };
