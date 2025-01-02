@@ -7,12 +7,11 @@ const Keyboard = () => {
   const { handleKeyPress } = useKeyboard();
 
   const keyboardLayout = [
-    ['E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Ğ', 'Ü'],
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Ğ', 'Ü'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ş', 'İ'],
-    ['ENTER', 'Z', 'C', 'V', 'B', 'N', 'M', 'Ö', 'Ç', '⌫']
+    ['Enter', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'Ö', 'Ç', '⌫']
   ];
 
-  // Klavye olaylarını dinle
   useEffect(() => {
     const handleKeyDown = (event) => {
       handleKeyPress(event.key);
@@ -23,8 +22,8 @@ const Keyboard = () => {
   }, [handleKeyPress]);
 
   const getKeyStyle = (key) => {
-    if (key === 'ENTER' || key === '⌫') {
-      return 'bg-gray-600 text-white hover:bg-gray-700';
+    if (key === 'Enter' || key === '⌫') {
+      return 'bg-gray-300 hover:bg-gray-400';
     }
 
     const status = usedLetters[key.toLowerCase()];
@@ -34,9 +33,9 @@ const Keyboard = () => {
       case 'present':
         return 'bg-yellow-500 text-white hover:bg-yellow-600';
       case 'wrong':
-        return 'bg-gray-800 text-white hover:bg-gray-900';
+        return 'bg-gray-600 text-white hover:bg-gray-700';
       default:
-        return 'bg-gray-400 text-white hover:bg-gray-500';
+        return 'bg-gray-300 hover:bg-gray-400';
     }
   };
 
@@ -44,9 +43,9 @@ const Keyboard = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 p-2 bg-gray-100">
-      <div className="max-w-2xl mx-auto space-y-2">
+      <div className="max-w-2xl mx-auto space-y-1.5">
         {keyboardLayout.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center gap-1">
+          <div key={rowIndex} className="flex justify-center gap-1.5">
             {row.map((key) => (
               <button
                 key={key}
@@ -59,13 +58,13 @@ const Keyboard = () => {
                 }}
                 className={`
                   ${getKeyStyle(key)}
-                  ${key === 'ENTER' ? 'w-20' : key === '⌫' ? 'w-16' : 'w-12'}
-                  h-14
-                  rounded-lg
-                  font-bold
-                  text-lg
+                  ${key === 'Enter' ? 'w-16' : key === '⌫' ? 'w-12' : 'w-10'}
+                  h-12
+                  rounded
+                  font-medium
+                  text-sm
                   transition-colors
-                  shadow-md
+                  shadow-sm
                   active:scale-95
                   focus:outline-none
                 `}
