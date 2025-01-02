@@ -1,11 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+const words = require('../game_words.json');
 
 exports.handler = async function(event, context) {
   try {
-    const dataPath = path.join(__dirname, '../game_words.json');
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-    
     return {
       statusCode: 200,
       headers: {
@@ -13,7 +9,7 @@ exports.handler = async function(event, context) {
         'Access-Control-Allow-Headers': 'Content-Type',
       },
       body: JSON.stringify({
-        words: data.words
+        words: words.words
       })
     };
   } catch (error) {

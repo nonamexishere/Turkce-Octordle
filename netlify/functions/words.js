@@ -1,11 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+const words = require('../game_words.json');
 
 exports.handler = async function(event, context) {
   try {
-    const dataPath = path.join(__dirname, '../game_words.json');
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-    
     // Günün kelimelerini seç
     const startDate = new Date('2024-03-20').getTime();
     const today = new Date().getTime();
@@ -18,7 +14,7 @@ exports.handler = async function(event, context) {
         'Access-Control-Allow-Headers': 'Content-Type',
       },
       body: JSON.stringify({
-        words: data.words.slice((dayNumber - 1) * 8, dayNumber * 8),
+        words: words.words.slice((dayNumber - 1) * 8, dayNumber * 8),
         dayNumber: dayNumber
       })
     };
