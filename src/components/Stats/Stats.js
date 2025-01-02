@@ -137,13 +137,19 @@ const Stats = () => {
                     <span className="text-gray-600">Tahta {index + 1}:</span>
                     {gameStatus !== 'playing' && (
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setSelectedWord(gameWords[index].word)}
-                          className={`font-bold hover:text-blue-600 ${
+                        <span
+                          className={`font-bold ${
                             solvedBoards.has(index) ? 'text-gray-800' : 'text-gray-500'
                           }`}
                         >
                           {gameWords[index].word.toUpperCase()}
+                        </span>
+                        <button
+                          onClick={() => setSelectedWord(gameWords[index].word)}
+                          className="text-blue-500 hover:text-blue-600 focus:outline-none"
+                          title="Kelime anlamını göster"
+                        >
+                          📖
                         </button>
                       </div>
                     )}
