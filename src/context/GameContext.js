@@ -119,7 +119,7 @@ export const GameProvider = ({ children }) => {
     if (!isLoading) {
       saveGameState();
     }
-  }, [guesses, gameStatus, usedLetters, solvedBoards, score]);
+  }, [guesses, gameStatus, usedLetters, solvedBoards, score, isLoading, saveGameState]);
 
   const fetchGameWords = async () => {
     try {

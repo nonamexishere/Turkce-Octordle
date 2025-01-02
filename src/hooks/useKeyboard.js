@@ -2,7 +2,7 @@ import { useEffect, useCallback } from 'react';
 import { useGame } from '../context/GameContext';
 
 const useKeyboard = () => {
-  const { currentGuess, setCurrentGuess, makeGuess, gameWords } = useGame();
+  const { currentGuess, setCurrentGuess, makeGuess, gameWords, gameStatus } = useGame();
 
   // Türkçe karakter eşleştirmeleri
   const turkishKeyMap = {
@@ -34,33 +34,24 @@ const useKeyboard = () => {
     }
   }, []);
 
-  const handleKeyPress = useCallback(async (key) => {
-    if (key === 'Enter' && currentGuess.length === 5) {
-      // Kelime kontrolü yap
-      const isValid = await isValidWord(currentGuess);
-      if (isValid) {
-        makeGuess(currentGuess);
-      } else {
-        // Geçersiz kelime uyarısı göster
-        alert('Bu kelime listede yok!');
-      }
-    } else if (key === 'Backspace') {
+  const handleKeyPress = useCallback((event) => {
+    if (gameStatus !== 'playing') return;
+
+    const key = event.key.toLowerCase();
+    const turkishKey = turkishKeyMap[key] || key;
+
+    if (key === 'enter') {
+      makeGuess(currentGuess);
+    } else if (key === 'backspace') {
       setCurrentGuess(prev => prev.slice(0, -1));
-    } else if (currentGuess.length < 5) {
-      // Türkçe karakter kontrolü ve dönüşümü
-      const normalizedKey = key.toLowerCase();
-      const mappedKey = turkishKeyMap[key] || normalizedKey;
-      
-      // Sadece geçerli Türkçe karakterleri kabul et
-      if (/^[a-zçğıöşü]$/.test(mappedKey)) {
-        setCurrentGuess(prev => prev + mappedKey);
-      }
+    } else if (/^[a-zçğıöşü]$/.test(turkishKey) && currentGuess.length < 5) {
+      setCurrentGuess(prev => prev + turkishKey.toUpperCase());
     }
-  }, [currentGuess, makeGuess, setCurrentGuess, isValidWord]);
+  }, [currentGuess, makeGuess, gameStatus, turkishKeyMap]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      handleKeyPress(event.key);
+      handleKeyPress(event);
     };
 
     window.addEventListener('keydown', handleKeyDown);
