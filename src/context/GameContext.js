@@ -145,10 +145,12 @@ export const GameProvider = ({ children }) => {
 
   const normalizeWord = (word) => {
     const charMap = {
-      'İ': 'İ', 'I': 'I',
-      'Ğ': 'Ğ', 'Ü': 'Ü',
-      'Ş': 'Ş', 'Ö': 'Ö',
-      'Ç': 'Ç'
+      'İ': 'İ', 'I': 'I', 'i': 'İ', 'ı': 'I',
+      'Ğ': 'Ğ', 'ğ': 'Ğ',
+      'Ü': 'Ü', 'ü': 'Ü',
+      'Ş': 'Ş', 'ş': 'Ş',
+      'Ö': 'Ö', 'ö': 'Ö',
+      'Ç': 'Ç', 'ç': 'Ç'
     };
     return word.split('').map(char => charMap[char] || char.toUpperCase()).join('');
   };
@@ -161,13 +163,15 @@ export const GameProvider = ({ children }) => {
     
     // Türkçe karakterleri normalize et
     const normalizeForComparison = (word) => {
-      return word.replace(/İ/g, 'I')
-                .replace(/Ğ/g, 'G')
-                .replace(/Ü/g, 'U')
-                .replace(/Ş/g, 'S')
-                .replace(/Ö/g, 'O')
-                .replace(/Ç/g, 'C')
-                .toUpperCase();
+      const charMap = {
+        'İ': 'I', 'I': 'I', 'i': 'I', 'ı': 'I',
+        'Ğ': 'G', 'ğ': 'G',
+        'Ü': 'U', 'ü': 'U',
+        'Ş': 'S', 'ş': 'S',
+        'Ö': 'O', 'ö': 'O',
+        'Ç': 'C', 'ç': 'C'
+      };
+      return word.split('').map(char => charMap[char] || char.toUpperCase()).join('');
     };
     
     const normalizedGuess = normalizeForComparison(guess);

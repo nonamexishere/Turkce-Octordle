@@ -1,5 +1,25 @@
 const words = require('../game_words.json');
 
+// Günlük kelime karıştırma fonksiyonu
+const shuffleWords = (wordList, seed) => {
+  const shuffled = [...wordList];
+  let currentIndex = shuffled.length;
+  
+  // Seed'i kullanarak deterministik bir karıştırma yapalım
+  const random = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+
+  while (currentIndex > 0) {
+    const randomIndex = Math.floor(random() * currentIndex);
+    currentIndex--;
+    [shuffled[currentIndex], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[currentIndex]];
+  }
+  
+  return shuffled;
+};
+
 exports.handler = async function(event, context) {
   try {
     // Günün kelimelerini seç
@@ -14,6 +34,9 @@ exports.handler = async function(event, context) {
     const maxDays = Math.floor(words.words.length / 8);
     dayNumber = ((dayNumber - 1) % maxDays) + 1;
     
+    // Kelimeleri günlük seed ile karıştır
+    const shuffledWords = shuffleWords(words.words, dayNumber);
+    
     return {
       statusCode: 200,
       headers: {
@@ -21,7 +44,7 @@ exports.handler = async function(event, context) {
         'Access-Control-Allow-Headers': 'Content-Type',
       },
       body: JSON.stringify({
-        words: words.words.slice((dayNumber - 1) * 8, dayNumber * 8),
+        words: shuffledWords.slice((dayNumber - 1) * 8, dayNumber * 8),
         dayNumber: dayNumber
       })
     };
