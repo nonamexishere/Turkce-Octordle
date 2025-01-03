@@ -11,9 +11,9 @@ const Keyboard = ({ onKeyPress }) => {
 
   // Türkçe klavye düzeni
   const rows = [
-    ['e', 'r', 't', 'y', 'u', 'ı', 'o', 'p', 'ğ', 'ü'],
+    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'ı', 'o', 'p', 'ğ', 'ü'],
     ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ş', 'i'],
-    ['enter', 'z', 'c', 'v', 'b', 'n', 'm', 'ö', 'ç', 'backspace'],
+    ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'ö', 'ç', 'backspace'],
   ];
 
   // Türkçe karakter dönüşümleri
