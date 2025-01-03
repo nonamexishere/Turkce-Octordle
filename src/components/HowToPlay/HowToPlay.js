@@ -57,7 +57,7 @@ const HowToPlay = ({ onClose }) => {
               <li>Her ek denemede 1 puan azalır</li>
               <li>13. denemede 8 puan</li>
               <li>Bulunamayan kelimeler için 0 puan</li>
-              <li>Maksimum puan: 8 kelime × 20 puan = 160 puan</li>
+              <li>Maksimum puan: 132 puan</li>
             </ul>
           </div>
 
