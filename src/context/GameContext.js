@@ -198,34 +198,27 @@ export const GameProvider = ({ children }) => {
     }
   };
 
-  const updateUsedLetters = (guess, results) => {
-    const newUsedLetters = { ...usedLetters };
-    const letters = guess.split('');
-
-    letters.forEach((letter) => {
-      let bestResult = 'wrong';
+  const updateLetterStatuses = (guess, wordIndex, result) => {
+    setUsedLetters(prev => {
+      const newStatuses = { ...prev };
       
-      results.forEach((result) => {
-        const letterPositions = letters.map((l, i) => l === letter ? i : -1).filter(i => i !== -1);
+      for (let i = 0; i < guess.length; i++) {
+        const letter = guess[i].toLowerCase();
+        if (!newStatuses[letter]) {
+          newStatuses[letter] = Array(8).fill('unused');
+        }
         
-        letterPositions.forEach((pos) => {
-          const status = result[pos];
-          if (status === 'correct') {
-            bestResult = 'correct';
-          } else if (status === 'present' && bestResult !== 'correct') {
-            bestResult = 'present';
-          }
-        });
-      });
-
-      if (!newUsedLetters[letter] || 
-          (newUsedLetters[letter] === 'wrong' && bestResult !== 'wrong') ||
-          (newUsedLetters[letter] === 'present' && bestResult === 'correct')) {
-        newUsedLetters[letter] = bestResult;
+        if (result[i] === 'correct') {
+          newStatuses[letter][wordIndex] = 'correct';
+        } else if (result[i] === 'present' && newStatuses[letter][wordIndex] !== 'correct') {
+          newStatuses[letter][wordIndex] = 'present';
+        } else if (result[i] === 'wrong' && newStatuses[letter][wordIndex] !== 'correct' && newStatuses[letter][wordIndex] !== 'present') {
+          newStatuses[letter][wordIndex] = 'wrong';
+        }
       }
+      
+      return newStatuses;
     });
-
-    setUsedLetters(newUsedLetters);
   };
 
   const calculateScore = (newGuesses, newSolvedBoards) => {
@@ -267,7 +260,7 @@ export const GameProvider = ({ children }) => {
       const newGuesses = [...guesses, { word: guess, results }];
       setGuesses(newGuesses);
 
-      updateUsedLetters(guess, results);
+      updateLetterStatuses(guess, 0, results[0]);
 
       const newSolvedBoards = new Set(solvedBoards);
       results.forEach((result, index) => {

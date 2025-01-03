@@ -21,22 +21,41 @@ const Keyboard = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyPress]);
 
-  const getKeyStyle = (key) => {
+  const getKeyStyles = (key) => {
     if (key === 'Enter' || key === '⌫') {
-      return 'bg-gray-300 hover:bg-gray-400';
+      return ['bg-gray-300 hover:bg-gray-400'];
     }
 
-    const status = usedLetters[key.toLowerCase()];
-    switch (status) {
-      case 'correct':
-        return 'bg-green-500 text-white hover:bg-green-600';
-      case 'present':
-        return 'bg-yellow-500 text-white hover:bg-yellow-600';
-      case 'wrong':
-        return 'bg-gray-600 text-white hover:bg-gray-700';
-      default:
-        return 'bg-gray-300 hover:bg-gray-400';
+    const letterStatuses = usedLetters[key.toLowerCase()];
+    if (!letterStatuses) {
+      return ['bg-gray-300 hover:bg-gray-400'];
     }
+
+    // Her kelime için durumu kontrol et
+    const styles = [];
+    const statusCount = {
+      correct: 0,
+      present: 0,
+      wrong: 0,
+      unused: 0
+    };
+
+    letterStatuses.forEach(status => {
+      statusCount[status] = (statusCount[status] || 0) + 1;
+    });
+
+    // Stil sınıflarını oluştur
+    if (statusCount.correct > 0) {
+      styles.push(`bg-green-500 flex-grow`);
+    }
+    if (statusCount.present > 0) {
+      styles.push(`bg-yellow-500 flex-grow`);
+    }
+    if (statusCount.wrong > 0 || statusCount.unused === letterStatuses.length) {
+      styles.push(`bg-gray-300 flex-grow`);
+    }
+
+    return styles;
   };
 
   if (gameStatus !== 'playing') return null;
@@ -46,32 +65,43 @@ const Keyboard = () => {
       <div className="max-w-2xl mx-auto space-y-1.5">
         {keyboardLayout.map((row, rowIndex) => (
           <div key={rowIndex} className="flex justify-center gap-1.5">
-            {row.map((key) => (
-              <button
-                key={key}
-                onClick={() => {
-                  if (key === '⌫') {
-                    handleKeyPress('Backspace');
-                  } else {
-                    handleKeyPress(key);
-                  }
-                }}
-                className={`
-                  ${getKeyStyle(key)}
-                  ${key === 'Enter' ? 'w-16' : key === '⌫' ? 'w-12' : 'w-10'}
-                  h-12
-                  rounded
-                  font-medium
-                  text-sm
-                  transition-colors
-                  shadow-sm
-                  active:scale-95
-                  focus:outline-none
-                `}
-              >
-                {key}
-              </button>
-            ))}
+            {row.map((key) => {
+              const styles = getKeyStyles(key);
+              return (
+                <button
+                  key={key}
+                  onClick={() => {
+                    if (key === '⌫') {
+                      handleKeyPress('Backspace');
+                    } else {
+                      handleKeyPress(key);
+                    }
+                  }}
+                  className={`
+                    ${key === 'Enter' ? 'w-16' : key === '⌫' ? 'w-12' : 'w-10'}
+                    h-12
+                    rounded
+                    font-medium
+                    text-sm
+                    transition-colors
+                    shadow-sm
+                    active:scale-95
+                    focus:outline-none
+                    overflow-hidden
+                    relative
+                  `}
+                >
+                  <div className="absolute inset-0 flex">
+                    {styles.map((style, index) => (
+                      <div key={index} className={style} />
+                    ))}
+                  </div>
+                  <span className="relative z-10 text-center w-full block">
+                    {key}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>
