@@ -11,10 +11,19 @@ export const GameProvider = ({ children }) => {
       const savedState = localStorage.getItem('gameState');
       if (savedState) {
         const state = JSON.parse(savedState);
-        // Eğer kaydedilen oyun bugüne aitse, durumu geri yükle
-        if (state.date === new Date().toDateString()) {
+        // Türkiye saati ile 03:00'da gün değişimi kontrolü
+        const now = new Date();
+        const savedDate = new Date(state.date);
+        const turkeyTime = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // UTC+3
+        const savedTurkeyTime = new Date(savedDate.getTime() + (3 * 60 * 60 * 1000));
+        
+        // Eğer aynı gün ve saat 03:00'dan önceyse veya farklı günse
+        if (savedTurkeyTime.toDateString() === turkeyTime.toDateString() && 
+            turkeyTime.getHours() < 3) {
           return state;
         }
+        // Farklı gün veya saat 03:00'ı geçmişse, oyun durumunu sıfırla
+        localStorage.removeItem('gameState');
       }
     } catch (error) {
       console.error('Oyun durumu yüklenirken hata:', error);
@@ -62,13 +71,16 @@ export const GameProvider = ({ children }) => {
   // Oyun durumunu kaydet
   const saveGameState = () => {
     try {
+      const now = new Date();
+      const turkeyTime = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // UTC+3
+      
       const state = {
         guesses,
         gameStatus,
         usedLetters,
         solvedBoards: Array.from(solvedBoards),
         score,
-        date: new Date().toDateString()
+        date: now.toISOString() // UTC zaman damgası olarak kaydet
       };
       localStorage.setItem('gameState', JSON.stringify(state));
     } catch (error) {
