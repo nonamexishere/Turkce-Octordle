@@ -1,57 +1,52 @@
-import { useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useGame } from '../context/GameContext';
 
 const useKeyboard = () => {
-  const { makeGuess, currentGuess, setCurrentGuess, gameStatus } = useGame();
+  const { currentGuess, setCurrentGuess, makeGuess, gameStatus } = useGame();
 
   // Türkçe karakter eşleştirmeleri
   const turkishKeyMap = {
-    'i': 'i',
-    'I': 'ı',
-    'İ': 'i',
-    'ı': 'ı',
-    'Ğ': 'ğ',
-    'ğ': 'ğ',
-    'Ü': 'ü',
-    'ü': 'ü',
-    'Ş': 'ş',
-    'ş': 'ş',
-    'Ö': 'ö',
-    'ö': 'ö',
-    'Ç': 'ç',
-    'ç': 'ç'
+    'i': 'İ',
+    'I': 'I',
+    'İ': 'İ',
+    'ı': 'I',
+    'Ğ': 'Ğ',
+    'ğ': 'Ğ',
+    'Ü': 'Ü',
+    'ü': 'Ü',
+    'Ş': 'Ş',
+    'ş': 'Ş',
+    'Ö': 'Ö',
+    'ö': 'Ö',
+    'Ç': 'Ç',
+    'ç': 'Ç'
   };
 
-  const handleKeyPress = useCallback((key) => {
+  const handleKeyInput = useCallback((key) => {
     if (gameStatus !== 'playing') return;
 
-    // Enter tuşu kontrolü
-    if (key === 'Enter') {
-      if (currentGuess.length === 5) {
-        makeGuess(currentGuess);
-      }
-      return;
-    }
-
-    // Backspace tuşu kontrolü
-    if (key === 'Backspace') {
+    const lowerKey = key.toLowerCase();
+    
+    if (lowerKey === 'enter') {
+      makeGuess(currentGuess);
+    } else if (lowerKey === 'backspace' || lowerKey === '←') {
       setCurrentGuess(prev => prev.slice(0, -1));
-      return;
+    } else if (/^[a-zçğıiöşü]$/.test(lowerKey) && currentGuess.length < 5) {
+      const mappedKey = turkishKeyMap[lowerKey] || lowerKey.toUpperCase();
+      setCurrentGuess(prev => prev + mappedKey);
     }
+  }, [currentGuess, makeGuess, gameStatus]);
 
-    // Normal karakter kontrolü
-    if (currentGuess.length < 5) {
-      // Türkçe karakter dönüşümü
-      const normalizedKey = turkishKeyMap[key] || key.toLowerCase();
-      
-      // Sadece harf karakterlerini kabul et
-      if (/^[a-zçğıöşüi]$/i.test(normalizedKey)) {
-        setCurrentGuess(prev => prev + normalizedKey);
-      }
-    }
-  }, [currentGuess, gameStatus, makeGuess, setCurrentGuess]);
+  const handleKeyPress = useCallback((event) => {
+    handleKeyInput(event.key);
+  }, [handleKeyInput]);
 
-  return { handleKeyPress };
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleKeyPress]);
+
+  return { handleKeyPress: handleKeyInput };
 };
 
 export default useKeyboard; 
