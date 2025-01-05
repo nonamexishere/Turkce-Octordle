@@ -11,19 +11,25 @@ export const GameProvider = ({ children }) => {
       const savedState = localStorage.getItem('gameState');
       if (savedState) {
         const state = JSON.parse(savedState);
-        // Türkiye saati ile 03:00'da gün değişimi kontrolü
         const now = new Date();
         const savedDate = new Date(state.date);
         const turkeyTime = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // UTC+3
         const savedTurkeyTime = new Date(savedDate.getTime() + (3 * 60 * 60 * 1000));
         
-        // Eğer aynı gün ve saat 03:00'dan önceyse veya farklı günse
-        if (savedTurkeyTime.toDateString() === turkeyTime.toDateString() && 
-            turkeyTime.getHours() < 3) {
+        // Aynı günün 03:00'dan önceki zamanı için
+        if (savedTurkeyTime.toDateString() === turkeyTime.toDateString()) {
+          if (turkeyTime.getHours() < 3 || savedTurkeyTime.getHours() >= 3) {
+            return state;
+          }
+        }
+        // Farklı gün ve saat 03:00'ı geçmişse, oyun durumunu sıfırla
+        else if (savedTurkeyTime.toDateString() !== turkeyTime.toDateString() && turkeyTime.getHours() >= 3) {
+          localStorage.removeItem('gameState');
+        }
+        // Önceki günün 03:00'dan sonraki oyunu için
+        else if (savedTurkeyTime.toDateString() !== turkeyTime.toDateString() && turkeyTime.getHours() < 3 && savedTurkeyTime.getHours() >= 3) {
           return state;
         }
-        // Farklı gün veya saat 03:00'ı geçmişse, oyun durumunu sıfırla
-        localStorage.removeItem('gameState');
       }
     } catch (error) {
       console.error('Oyun durumu yüklenirken hata:', error);
@@ -80,7 +86,8 @@ export const GameProvider = ({ children }) => {
         usedLetters,
         solvedBoards: Array.from(solvedBoards),
         score,
-        date: now.toISOString() // UTC zaman damgası olarak kaydet
+        date: now.toISOString(), // UTC zaman damgası olarak kaydet
+        lastPlayedHour: turkeyTime.getHours() // Oynanılan saati kaydet
       };
       localStorage.setItem('gameState', JSON.stringify(state));
     } catch (error) {
