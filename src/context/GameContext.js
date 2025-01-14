@@ -86,8 +86,9 @@ export const GameProvider = ({ children }) => {
         usedLetters,
         solvedBoards: Array.from(solvedBoards),
         score,
-        date: now.toISOString(), // UTC zaman damgası olarak kaydet
-        lastPlayedHour: turkeyTime.getHours() // Oynanılan saati kaydet
+        date: now.toISOString(),
+        lastPlayedHour: turkeyTime.getHours(),
+        dayNumber
       };
       localStorage.setItem('gameState', JSON.stringify(state));
     } catch (error) {
@@ -117,16 +118,28 @@ export const GameProvider = ({ children }) => {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      
+      // Önce yeni kelimeleri yükle
       await Promise.all([fetchGameWords(), fetchWordList()]);
       
-      // Kaydedilmiş oyun durumunu yükle
+      // Kaydedilmiş oyun durumunu yükle ve kontrol et
       const savedState = loadGameState();
-      if (savedState) {
+      
+      // Eğer kaydedilmiş durum varsa ve güncel kelimelerle uyumluysa yükle
+      if (savedState && savedState.dayNumber === dayNumber) {
         setGuesses(savedState.guesses);
         setGameStatus(savedState.gameStatus);
         setUsedLetters(savedState.usedLetters);
         setSolvedBoards(new Set(savedState.solvedBoards));
         setScore(savedState.score);
+      } else {
+        // Eğer gün değiştiyse veya kaydedilmiş durum yoksa, oyunu sıfırla
+        localStorage.removeItem('gameState');
+        setGuesses([]);
+        setGameStatus('playing');
+        setUsedLetters({});
+        setSolvedBoards(new Set());
+        setScore(0);
       }
       
       setIsLoading(false);
