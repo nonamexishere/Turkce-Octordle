@@ -16,23 +16,26 @@ export const GameProvider = ({ children }) => {
         const turkeyTime = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // UTC+3
         const savedTurkeyTime = new Date(savedDate.getTime() + (3 * 60 * 60 * 1000));
         
-        // Aynı gün kontrolü (03:00'a göre)
-        const isSameDay = () => {
-          if (turkeyTime.getHours() < 3) {
-            // Gece yarısı ile 03:00 arası için önceki günün oyununu göster
-            const prevDay = new Date(turkeyTime);
+        // Oyun günü kontrolü (03:00'dan sonraki 24 saat)
+        const getGameDay = (date) => {
+          const hours = date.getHours();
+          // Eğer saat 03:00'dan önceyse, bir önceki günün oyunu
+          if (hours < 3) {
+            const prevDay = new Date(date);
             prevDay.setDate(prevDay.getDate() - 1);
-            return savedTurkeyTime.toDateString() === prevDay.toDateString() && savedTurkeyTime.getHours() >= 3;
-          } else {
-            // 03:00'dan sonrası için aynı günün oyununu göster
-            return savedTurkeyTime.toDateString() === turkeyTime.toDateString() && savedTurkeyTime.getHours() >= 3;
+            return prevDay.toDateString();
           }
+          return date.toDateString();
         };
 
-        if (isSameDay()) {
+        // Mevcut oyun günü ile kaydedilen oyun gününü karşılaştır
+        const currentGameDay = getGameDay(turkeyTime);
+        const savedGameDay = getGameDay(savedTurkeyTime);
+
+        if (currentGameDay === savedGameDay) {
           return state;
         } else {
-          // Farklı gün, oyun durumunu sıfırla
+          // Farklı oyun günü, durumu sıfırla
           localStorage.removeItem('gameState');
         }
       }
