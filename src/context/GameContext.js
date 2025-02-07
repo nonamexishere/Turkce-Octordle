@@ -16,19 +16,24 @@ export const GameProvider = ({ children }) => {
         const turkeyTime = new Date(now.getTime() + (3 * 60 * 60 * 1000)); // UTC+3
         const savedTurkeyTime = new Date(savedDate.getTime() + (3 * 60 * 60 * 1000));
         
-        // Aynı günün 03:00'dan önceki zamanı için
-        if (savedTurkeyTime.toDateString() === turkeyTime.toDateString()) {
-          if (turkeyTime.getHours() < 3 || savedTurkeyTime.getHours() >= 3) {
-            return state;
+        // Aynı gün kontrolü (03:00'a göre)
+        const isSameDay = () => {
+          if (turkeyTime.getHours() < 3) {
+            // Gece yarısı ile 03:00 arası için önceki günün oyununu göster
+            const prevDay = new Date(turkeyTime);
+            prevDay.setDate(prevDay.getDate() - 1);
+            return savedTurkeyTime.toDateString() === prevDay.toDateString() && savedTurkeyTime.getHours() >= 3;
+          } else {
+            // 03:00'dan sonrası için aynı günün oyununu göster
+            return savedTurkeyTime.toDateString() === turkeyTime.toDateString() && savedTurkeyTime.getHours() >= 3;
           }
-        }
-        // Farklı gün ve saat 03:00'ı geçmişse, oyun durumunu sıfırla
-        else if (savedTurkeyTime.toDateString() !== turkeyTime.toDateString() && turkeyTime.getHours() >= 3) {
-          localStorage.removeItem('gameState');
-        }
-        // Önceki günün 03:00'dan sonraki oyunu için
-        else if (savedTurkeyTime.toDateString() !== turkeyTime.toDateString() && turkeyTime.getHours() < 3 && savedTurkeyTime.getHours() >= 3) {
+        };
+
+        if (isSameDay()) {
           return state;
+        } else {
+          // Farklı gün, oyun durumunu sıfırla
+          localStorage.removeItem('gameState');
         }
       }
     } catch (error) {
@@ -87,8 +92,7 @@ export const GameProvider = ({ children }) => {
         solvedBoards: Array.from(solvedBoards),
         score,
         date: now.toISOString(),
-        lastPlayedHour: turkeyTime.getHours(),
-        dayNumber
+        lastPlayedHour: turkeyTime.getHours()
       };
       localStorage.setItem('gameState', JSON.stringify(state));
     } catch (error) {
@@ -119,31 +123,34 @@ export const GameProvider = ({ children }) => {
     const loadData = async () => {
       setIsLoading(true);
       
-      // Önce yeni kelimeleri yükle
-      await Promise.all([fetchGameWords(), fetchWordList()]);
-      
-      // Kaydedilmiş oyun durumunu yükle ve kontrol et
-      const savedState = loadGameState();
-      
-      // Eğer kaydedilmiş durum varsa ve güncel kelimelerle uyumluysa yükle
-      if (savedState && savedState.dayNumber === dayNumber) {
-        setGuesses(savedState.guesses);
-        setGameStatus(savedState.gameStatus);
-        setUsedLetters(savedState.usedLetters);
-        setSolvedBoards(new Set(savedState.solvedBoards));
-        setScore(savedState.score);
-      } else {
-        // Eğer gün değiştiyse veya kaydedilmiş durum yoksa, oyunu sıfırla
-        localStorage.removeItem('gameState');
-        setGuesses([]);
-        setGameStatus('playing');
-        setUsedLetters({});
-        setSolvedBoards(new Set());
-        setScore(0);
+      try {
+        // Önce yeni kelimeleri yükle
+        await Promise.all([fetchGameWords(), fetchWordList()]);
+        
+        // Kaydedilmiş oyun durumunu yükle
+        const savedState = loadGameState();
+        
+        if (savedState) {
+          setGuesses(savedState.guesses || []);
+          setGameStatus(savedState.gameStatus || 'playing');
+          setUsedLetters(savedState.usedLetters || {});
+          setSolvedBoards(new Set(savedState.solvedBoards || []));
+          setScore(savedState.score || 0);
+        } else {
+          // Yeni oyun başlat
+          setGuesses([]);
+          setGameStatus('playing');
+          setUsedLetters({});
+          setSolvedBoards(new Set());
+          setScore(0);
+        }
+      } catch (error) {
+        console.error('Veri yüklenirken hata:', error);
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
+    
     loadData();
   }, []);
 
